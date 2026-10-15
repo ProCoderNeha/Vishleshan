@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DRDO SSPL Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='chart.umd.min.js') }}"></script>
+</head>
+<body>
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+    <p>Loading data…</p>
+  </div>
+
+  <header class="top-bar">
+    <div class="brand-logo logo-left">
+      <img src="{{ url_for('static', filename='DRDO_logo.png') }}" alt="DRDO SSPL logo">
+    </div>
+    <div class="brand-title">
+      <p class="org-kicker">Defence Research and Development Organisation - SSPL</p>
+      <h1>Solid State Physics Laboratory (SSPL)</h1>
+      <p class="hindi-title" lang="hi">ठोस अवस्था भौतिकी प्रयोगशाला</p>
+      <p class="department-title">HRD - Human Resource Department</p>
+      <p class="project-title">Vishleshan <span lang="hi">| विश्लेषण</span></p>
+    </div>
+    <div class="brand-logo logo-right">
+      <img src="{{ url_for('static', filename='ISO_logo.png') }}" alt="ISO logo">
+    </div>
+    <div class="top-actions">
+      <span id="current-file" class="file-name">No file loaded</span>
+      <button type="button" class="btn btn-secondary" id="filter-toggle" aria-expanded="false" aria-controls="filter-bar">Filters</button>
+      <button type="button" class="btn btn-secondary" id="export-pdf">Export PDF</button>
+      <button type="button" class="btn btn-secondary" id="refresh-data">Refresh Data</button>
+      <a class="btn btn-primary" href="/form">📝 Add Entry</a>
+      <a class="btn btn-secondary" href="/edit-form">✏️ Edit Entry</a>
+      <button type="button" class="btn btn-primary upload-btn" id="upload-btn">Upload Excel</button>
+      <input type="file" id="file-input" accept=".xlsx,.xls" hidden>
+    </div>
+  </header>
+
+  <section class="filter-bar hidden" id="filter-bar">
+    <div class="filter-controls" id="filter-controls"></div>
+    <div class="filter-actions">
+      <button type="button" class="btn btn-primary" id="apply-filters">Apply Filters</button>
+      <button type="button" class="btn btn-secondary" id="reset-filters">Reset</button>
+    </div>
+  </section>
+
+  <main class="dashboard">
+    <section class="report-header" aria-hidden="true">
+      <h2>Solid State Physics Laboratory (SSPL) - Vishleshan</h2>
+      <p>ठोस अवस्था भौतिकी प्रयोगशाला</p>
+      <p>Vishleshan | विश्लेषण</p>
+      <p>HRD - Human Resource Department</p>
+      <p id="report-file">No file loaded</p>
+      <p id="report-generated">Generated report</p>
+    </section>
+
+    <section class="kpi-row" id="kpi-row">
+      <div class="kpi-card">
+        <span class="kpi-label">Total Number of Students</span>
+        <span class="kpi-value" id="kpi-total-students">—</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Female Interns</span>
+        <span class="kpi-value" id="kpi-female-interns">—</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Male Interns</span>
+        <span class="kpi-value" id="kpi-male-interns">—</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Branches Involved</span>
+        <span class="kpi-value" id="kpi-branches-involved">—</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Institutes Involved</span>
+        <span class="kpi-value" id="kpi-institutes-involved">—</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">DRDO Divisions</span>
+        <span class="kpi-value" id="kpi-drdo-divisions">—</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Certificates Issued</span>
+        <span class="kpi-value" id="kpi-certificates-issued">—</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Average Attachment Weeks</span>
+        <span class="kpi-value" id="kpi-average-weeks">—</span>
+      </div>
+    </section>
+
+    <section class="charts-grid" id="charts-grid">
+      <article class="chart-card" data-chart-id="0">
+        <div class="chart-header">
+          <h3 class="chart-title" data-title>Chart 1</h3>
+          <button type="button" class="btn-icon refresh-chart" title="Refresh">↻</button>
+        </div>
+        <div class="chart-controls">
+          <select class="x-axis"></select>
+          <select class="y-axis"></select>
+          <select class="chart-type">
+            <option value="bar">Bar</option>
+            <option value="line">Line</option>
+            <option value="pie">Pie</option>
+            <option value="doughnut">Doughnut</option>
+          </select>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas></canvas>
+        </div>
+      </article>
+      <article class="chart-card" data-chart-id="1">
+        <div class="chart-header">
+          <h3 class="chart-title" data-title>Chart 2</h3>
+          <button type="button" class="btn-icon refresh-chart" title="Refresh">↻</button>
+        </div>
+        <div class="chart-controls">
+          <select class="x-axis"></select>
+          <select class="y-axis"></select>
+          <select class="chart-type">
+            <option value="bar">Bar</option>
+            <option value="line">Line</option>
+            <option value="pie">Pie</option>
+            <option value="doughnut">Doughnut</option>
+          </select>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas></canvas>
+        </div>
+      </article>
+      <article class="chart-card" data-chart-id="2">
+        <div class="chart-header">
+          <h3 class="chart-title" data-title>Chart 3</h3>
+          <button type="button" class="btn-icon refresh-chart" title="Refresh">↻</button>
+        </div>
+        <div class="chart-controls">
+          <select class="x-axis"></select>
+          <select class="y-axis"></select>
+          <select class="chart-type">
+            <option value="bar">Bar</option>
+            <option value="line">Line</option>
+            <option value="pie">Pie</option>
+            <option value="doughnut">Doughnut</option>
+          </select>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas></canvas>
+        </div>
+      </article>
+      <article class="chart-card" data-chart-id="3">
+        <div class="chart-header">
+          <h3 class="chart-title" data-title>Chart 4</h3>
+          <button type="button" class="btn-icon refresh-chart" title="Refresh">↻</button>
+        </div>
+        <div class="chart-controls">
+          <select class="x-axis"></select>
+          <select class="y-axis"></select>
+          <select class="chart-type">
+            <option value="bar">Bar</option>
+            <option value="line">Line</option>
+            <option value="pie">Pie</option>
+            <option value="doughnut">Doughnut</option>
+          </select>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas></canvas>
+        </div>
+      </article>
+      <article class="chart-card" data-chart-id="4">
+        <div class="chart-header">
+          <h3 class="chart-title" data-title>Chart 5</h3>
+          <button type="button" class="btn-icon refresh-chart" title="Refresh">↻</button>
+        </div>
+        <div class="chart-controls">
+          <select class="x-axis"></select>
+          <select class="y-axis"></select>
+          <select class="chart-type">
+            <option value="bar">Bar</option>
+            <option value="line">Line</option>
+            <option value="pie">Pie</option>
+            <option value="doughnut">Doughnut</option>
+          </select>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas></canvas>
+        </div>
+      </article>
+      <article class="chart-card" data-chart-id="5">
+        <div class="chart-header">
+          <h3 class="chart-title" data-title>Chart 6</h3>
+          <button type="button" class="btn-icon refresh-chart" title="Refresh">↻</button>
+        </div>
+        <div class="chart-controls">
+          <select class="x-axis"></select>
+          <select class="y-axis"></select>
+          <select class="chart-type">
+            <option value="bar">Bar</option>
+            <option value="line">Line</option>
+            <option value="pie">Pie</option>
+            <option value="doughnut">Doughnut</option>
+          </select>
+        </div>
+        <div class="chart-canvas-wrap">
+          <canvas></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="data-section">
+      <h2>Data Table</h2>
+      <div class="table-wrap">
+        <table id="data-table">
+          <thead id="table-head"></thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <button type="button" class="btn btn-secondary" id="prev-page" disabled>Previous</button>
+        <span id="page-info">Page 1 of 1</span>
+        <button type="button" class="btn btn-secondary" id="next-page" disabled>Next</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

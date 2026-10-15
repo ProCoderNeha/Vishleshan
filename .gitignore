@@ -1,0 +1,30 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Build output
+build/
+dist/
+*.exe
+deps/
+
+# Runtime data: never commit real records
+uploads/
+*.xlsx
+*.xls
+!sample_data.xlsx
+data_analysis.json
+
+# Local settings and tool folders
+.vscode/
+.idea/
+.windsurf/
+.cline/
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+static/*_logo.png
